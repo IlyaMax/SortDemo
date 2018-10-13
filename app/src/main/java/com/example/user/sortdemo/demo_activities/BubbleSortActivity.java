@@ -10,14 +10,16 @@ import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.example.user.sortdemo.ConstArrays;
 import com.example.user.sortdemo.R;
+import com.example.user.sortdemo.recycler_view.ElemAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,50 +33,33 @@ public class BubbleSortActivity extends SortActivity{
 
     ConstraintLayout constraintLayout;
     RecyclerView recyclerView;
-    LinearLayoutManager layoutManager;
-    RecyclerView.Adapter adapter;
+    ElemAdapter adapter;
     final Handler handler = new Handler();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sort);
-
         shuffleButton = findViewById(R.id.shuffle);
         sortButton = findViewById(R.id.start);
         constraintLayout = findViewById(R.id.mainLayout);
         recyclerView = findViewById(R.id.recyclerView);
-        layoutManager = new LinearLayoutManager(this);
-        adapter = new RecyclerView.Adapter() {
-            @NonNull
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-                return null;
-            }
-
-            @Override
-            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-
-            }
-
-            @Override
-            public int getItemCount() {
-                return 0;
-            }
-        };
-        recyclerView.setLayoutManager(layoutManager);
-        shuffleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateList();
-            }
-        });
+        adapter = new ElemAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setAdapter(adapter);
 
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                swap(1,2);
+                sort();
+                Log.d("DEBUG","I reacting");
             }
         });
+//        shuffleButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateList();
+//            }
+//        });
 
     }
     @Override
