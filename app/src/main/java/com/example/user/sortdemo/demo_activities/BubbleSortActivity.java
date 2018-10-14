@@ -47,11 +47,18 @@ public class BubbleSortActivity extends SortActivity{
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.setAdapter(adapter);
 
+        shuffleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.shuffleSort();
+            }
+        });
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sort();
-                Log.d("DEBUG","I reacting");
+                Log.d("DEBUG","Sorting started");
+                adapter.sort();
+
             }
         });
 //        shuffleButton.setOnClickListener(new View.OnClickListener() {

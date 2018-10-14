@@ -1,6 +1,5 @@
 package com.example.user.sortdemo.recycler_view;
 
-import android.content.ClipData;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
 
@@ -31,11 +31,8 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     //private Thread
     Handler handler;
     int counter;
-    boolean firstSwap;
     public ElemAdapter()
     {
-        counter = 0;
-        firstSwap = false;
         list = new ArrayList<>();
         for (int i=1;i<=9;i++){
             Item item = new Item(i);
@@ -71,68 +68,126 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     public int getItemCount() {
         return list.size();
     }
-    public void swap(final int fromPosition,final int toPosition){
+
+
+
+
+    public void notifyItemsSwapped(final int fromPosition,final int toPosition){
         //int fromItem = (int)getItemId(fromPosition);
         //int toItem = (int)getItemId(toPosition);
-        Item item = list.get(fromPosition);
-        Collections.swap(list, fromPosition, toPosition);
         STATE.set(fromPosition,1);
         STATE.set(toPosition,1);
         notifyItemChanged(fromPosition);
         notifyItemChanged(toPosition);
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                moveItem(fromPosition,toPosition);
-                moveItem(toPosition-1,fromPosition);
+                Collections.swap(DRAWABLE, fromPosition, toPosition);
+                Collections.swap(RED_DRAWABLE, fromPosition, toPosition);
+                Collections.swap(YELLOW_DRAWABLE, fromPosition, toPosition);
+                Collections.swap(STATE, fromPosition, toPosition);
+                notifyItemMoved(fromPosition, toPosition);
+                notifyItemMoved(toPosition - 1, fromPosition);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Collections.swap(DRAWABLE,fromPosition,toPosition);
-                        Collections.swap(RED_DRAWABLE,fromPosition,toPosition);
-                        Collections.swap(YELLOW_DRAWABLE,fromPosition,toPosition);
                         STATE.set(fromPosition,0);
                         STATE.set(toPosition,0);
                         notifyItemChanged(fromPosition);
                         notifyItemChanged(toPosition);
+                        Log.d("DEBUG","swap end " + fromPosition + " " + toPosition);
                     }
                 },1000);
             }
         },1000);
-        counter++;
-        Log.d("DEBUG","in adapter");
+    }
+    public void highlight(final int index1,final int index2){
+
+
+        STATE.set(index1,2);
+        STATE.set(index2,2);
+        notifyItemChanged(index1);
+        notifyItemChanged(index2);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                STATE.set(index1,0);
+                STATE.set(index2,0);
+                notifyItemChanged(index1);
+                notifyItemChanged(index2);
+                Log.d("DEBUG","highlight end " + index1 + " " + index2);
+            }
+        },500);
     }
 
-    public void shuffleSort()
-    {
-
-    }
     public void sort()
     {
-        boolean isSorted = false;
-        int buf;
-        while(!isSorted) {
-            isSorted = true;
+        counter = 0;
+        int c = 0;
+        while(!isSorted()) {
+            Log.d("DEBUG", "Iteration:" + c++);
             for (int i = 0; i < list.size()-1; i++) {
                 final int curr = i;
-                if(list.get(curr).num < list.get(curr+1).num){
-                    isSorted = false;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("DEBUG","highlight start " + curr + " " + (curr+1));
+                        highlight(curr,curr+1);
+                    }
+                },counter);
+                counter+=1000;
+                if (list.get(curr).num > list.get(curr + 1).num) {
+                    Collections.swap(list, curr, curr + 1);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            swap(curr, curr + 1);
+
+                            Log.d("DEBUG","swap start " + curr + " " + (curr+1));
+                            notifyItemsSwapped(curr, curr+1);
                         }
-                    },(firstSwap)?0:3000*(counter));
+                    },counter);
+                    counter+=2500;
                 }
             }
         }
     }
-    private void moveItem(int fromPosition, int toPosition) {
-        final Item item = list.remove(fromPosition);
-        list.add(toPosition, item);
-        notifyItemMoved(fromPosition, toPosition);
+    private boolean isSorted() {
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i - 1).num > list.get(i).num) {
+                return false;
+            }
+        }
+        return true;
     }
+//    Collections.swap(list,index,i);
+//            Collections.swap(DRAWABLE,index,i);
+//            Collections.swap(RED_DRAWABLE,index,i);
+//            Collections.swap(YELLOW_DRAWABLE,index,i);
+//            Collections.swap(STATE,index,i);
+    public void shuffleSort()
+    {
+        Random rnd = ThreadLocalRandom.current();
+
+        for (int i = 0; i < 5; i++)
+        {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            Collections.swap(list,index,i);
+            Collections.swap(DRAWABLE,index,i);
+            Collections.swap(RED_DRAWABLE,index,i);
+            Collections.swap(YELLOW_DRAWABLE,index,i);
+            Collections.swap(STATE,index,i);
+
+        }
+        notifyItemRangeChanged(0,9);
+    }
+
+//    private void moveItem(int fromPosition, int toPosition) {
+//        final Item item = list.remove(fromPosition);
+//        list.add(toPosition, item);
+//        notifyItemMoved(fromPosition, toPosition);
+//    }
 //    private void update(){
 //        for (int position = 0;position<9;position++){
 //            notifyItemChanged(position);
