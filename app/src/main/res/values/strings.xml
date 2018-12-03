@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">SortDemo</string>
-    <string name="info_message">Это приложение иллюстрирует работу алгоритмов сортировки</string>
-    <string name="quick_sort">Сортировка Хоара</string>
-    <string name="merge_sort">Сортировка слиянием</string>
-    <string name="bubble_sort">Сортировка пузырьком</string>
+    <string name="welcome_message">Это приложение иллюстрирует работу алгоритмов сортировки</string>
+    <string name="sorted_message">Массив отсортирован</string>
+    <string name="stop_button">Остановить</string>
+    <string name="shuffle_button">Перемешать</string>
+    <string name="start_button">Запуск</string>
+    <string name="quick_sort_button">Сортировка Хоара</string>
+    <string name="merge_sort_button">Сортировка слиянием</string>
+    <string name="bubble_sort_button">Сортировка пузырьком</string>
 </resources>

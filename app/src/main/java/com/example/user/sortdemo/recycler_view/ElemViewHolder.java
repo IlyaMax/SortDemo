@@ -11,6 +11,6 @@ public class ElemViewHolder extends RecyclerView.ViewHolder {
     public ImageView ivElem;
     public ElemViewHolder(@NonNull View itemView) {
         super(itemView);
-        ivElem = (ImageView) itemView.findViewById(R.id.ivItem);
+        ivElem = itemView.findViewById(R.id.ivItem);
     }
 }
