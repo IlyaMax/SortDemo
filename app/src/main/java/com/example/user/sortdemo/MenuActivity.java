@@ -18,7 +18,6 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
         Button quickSortButton = (Button) findViewById(R.id.quick_sort);
         Button bubbleSortButton = (Button) findViewById(R.id.bubble_sort);
-        ImageView info = findViewById(R.id.info);
         quickSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -29,12 +28,6 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MenuActivity.this, BubbleSortActivity.class));
-            }
-        });
-        info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MenuActivity.this, InfoActivity.class));
             }
         });
     }

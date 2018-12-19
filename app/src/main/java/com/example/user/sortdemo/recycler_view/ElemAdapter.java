@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -41,15 +42,17 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     private final String TAG = "log";
     private Context context;
     private TextView comment;
+    private Button shuffleButton;
     //private Pair<Integer,Integer> groupIndexes1 = new Pair<Integer, Integer>(-1,-1);
     //private Pair<Integer,Integer> groupIndexes2 = new Pair<Integer, Integer>(-1,-1);
-    public ElemAdapter(TextView comment) {
+    public ElemAdapter(TextView comment,Button shuffleButton) {
         list = new ArrayList<>();
         for (int i=1;i<=9;i++){
             Item item = new Item(i);
             list.add(item);
         }
         this.comment = comment;
+        this.shuffleButton = shuffleButton;
     }
     @NonNull
     @Override
@@ -355,7 +358,14 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String msg = (finLow == 0&&finHigh == list.size()-1) ? "Массив отсортирован" : "Сортировка подмассива от " + finLow + " до " + finHigh + " завершена";
+                String msg;
+                if (finLow == 0&&finHigh == list.size()-1){
+                    msg = "Mассив отсортирован";
+                    shuffleButton.setEnabled(true);
+                }
+                else{
+                    msg = "Сортировка подмассива от " + finLow + " до " + finHigh + " завершена";
+                }
                 comment.setText(msg);
             }
         },counter);
