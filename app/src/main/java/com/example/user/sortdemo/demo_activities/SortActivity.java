@@ -7,56 +7,29 @@ import android.widget.ImageView;
 import com.example.user.sortdemo.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.example.user.sortdemo.demo_activities.SortActivity.ElemState.BLACK;
-
 public abstract class SortActivity extends AppCompatActivity {
+    int[] list = {0,1,2,3,4,5,6,7,8};
     Button shuffleButton;
     Button sortButton;
-    enum ElemState {BLACK,YELLOW,RED}
-    class Elem
-    {
-        int num;
-        int id;
-        int black;
-        int yellow;
-        int red;
-        ElemState state;
-        Elem (int num,int id,int black,int yellow,int red){
-            this.num = num;
-            this.id = id;
-            this.black = black;
-            this.yellow = yellow;
-            this.red = red;
-            state = BLACK;
-        }
-        void switchTo(ElemState state){this.state = state;}
-
-    }
-    List<Elem> list = Arrays.asList
-                    (new Elem(1,R.id.num1,R.drawable.icons8_1_24,R.drawable.icons8_1_24_yellow,R.drawable.icons8_1_24_red),
-                    new Elem(2,R.id.num2,R.drawable.icons8_2_24,R.drawable.icons8_2_24_yellow,R.drawable.icons8_2_24_red),
-                    new Elem(3,R.id.num3,R.drawable.icons8_3_24,R.drawable.icons8_3_24_yellow,R.drawable.icons8_3_24_red),
-                    new Elem(4,R.id.num4,R.drawable.icons8_4_24,R.drawable.icons8_4_24_yellow,R.drawable.icons8_4_24_red),
-                    new Elem(5,R.id.num5,R.drawable.icons8_5_24,R.drawable.icons8_5_24_yellow,R.drawable.icons8_5_24_red),
-                    new Elem(6,R.id.num6,R.drawable.icons8_6_24,R.drawable.icons8_6_24_yellow,R.drawable.icons8_6_24_red),
-                    new Elem(7,R.id.num7,R.drawable.icons8_7_24,R.drawable.icons8_7_24_yellow,R.drawable.icons8_7_24_red),
-                    new Elem(8,R.id.num8,R.drawable.icons8_8_24,R.drawable.icons8_8_24_yellow,R.drawable.icons8_8_24_red),
-                    new Elem(9,R.id.num9,R.drawable.icons8_9_24,R.drawable.icons8_9_24_yellow,R.drawable.icons8_9_24_red));
+    List<Integer> ID;
+    List<Integer> DRAWABLE;
+    List<Integer> YELLOW_DRAWABLE;
+    List<Integer> RED_DRAWABLE;
     void shuffleList()
     {
         // If running on Java 6 or older, use `new Random()` on RHS here
         Random rnd = ThreadLocalRandom.current();
-        for (int i = list.size() - 1; i > 0; i--)
+        for (int i = list.length - 1; i > 0; i--)
         {
             int index = rnd.nextInt(i + 1);
             // Simple swap
-            Collections.swap(list,index,i);
+            int a = list[index];
+            list[index] = list[i];
+            list[i] = a;
         }
     }
     abstract void sort();
