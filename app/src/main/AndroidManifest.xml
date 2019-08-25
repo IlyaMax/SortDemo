@@ -27,8 +27,6 @@
         <activity
             android:name=".demo_activities.BubbleSortActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".InfoActivity"
-            android:screenOrientation="landscape"></activity>
     </application>
 
 </manifest>

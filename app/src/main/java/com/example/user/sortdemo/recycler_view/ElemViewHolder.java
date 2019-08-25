@@ -4,13 +4,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.user.sortdemo.R;
 
 public class ElemViewHolder extends RecyclerView.ViewHolder {
-    public ImageView ivElem;
+    public TextView tvElem;
     public ElemViewHolder(@NonNull View itemView) {
         super(itemView);
-        ivElem = itemView.findViewById(R.id.ivItem);
+        tvElem = itemView.findViewById(R.id.tvElem);
     }
 }

@@ -1,10 +1,13 @@
 package com.example.user.sortdemo.recycler_view;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,15 +32,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
 
     private List<Integer> STATE = Arrays.asList(0,0,0,0,0,0,0,0,0);
-    private List<Integer> DRAWABLE = Arrays.asList(R.drawable.icons8_1_24,R.drawable.icons8_2_24,R.drawable.icons8_3_24,R.drawable.icons8_4_24,R.drawable.icons8_5_24,
-    R.drawable.icons8_6_24,R.drawable.icons8_7_24,R.drawable.icons8_8_24,R.drawable.icons8_9_24);
-    private List<Integer> RED_DRAWABLE = Arrays.asList(R.drawable.icons8_1_24_red,R.drawable.icons8_2_24_red,R.drawable.icons8_3_24_red,R.drawable.icons8_4_24_red,R.drawable.icons8_5_24_red,
-    R.drawable.icons8_6_24_red,R.drawable.icons8_7_24_red,R.drawable.icons8_8_24_red,R.drawable.icons8_9_24_red);
-    private List<Integer> YELLOW_DRAWABLE = Arrays.asList(R.drawable.icons8_1_24_yellow,R.drawable.icons8_2_24_yellow,R.drawable.icons8_3_24_yellow,R.drawable.icons8_4_24_yellow,R.drawable.icons8_5_24_yellow,
-    R.drawable.icons8_6_24_yellow,R.drawable.icons8_7_24_yellow,R.drawable.icons8_8_24_yellow,R.drawable.icons8_9_24_yellow);
-    private List<Integer> GREEN_DRAWABLE = Arrays.asList(R.drawable.icons8_1_24_green,R.drawable.icons8_2_24_green,R.drawable.icons8_3_24_green,R.drawable.icons8_4_24_green,R.drawable.icons8_5_24_green,
-            R.drawable.icons8_6_24_green,R.drawable.icons8_7_24_green,R.drawable.icons8_8_24_green,R.drawable.icons8_9_24_green);
     private ArrayList<Item> list;
+    private ArrayList<Item> handlerList;
     private Handler handler;
     private final String TAG = "log";
     private Context context;
@@ -47,9 +43,11 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     //private Pair<Integer,Integer> groupIndexes2 = new Pair<Integer, Integer>(-1,-1);
     public ElemAdapter(TextView comment,Button shuffleButton) {
         list = new ArrayList<>();
+        handlerList = new ArrayList<>();
         for (int i=1;i<=9;i++){
             Item item = new Item(i);
             list.add(item);
+            handlerList.add(item);
         }
         this.comment = comment;
         this.shuffleButton = shuffleButton;
@@ -63,37 +61,21 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     }
     @Override
     public void onBindViewHolder(@NonNull ElemViewHolder elemViewHolder, int i) {
-//        int startIndex1 = groupIndexes1.first;
-//        int endIndex1 = groupIndexes1.second;
-//        int startIndex2 = groupIndexes2.first;
-//        int endIndex2 = groupIndexes2.second;
-//        if ((i == startIndex1 && i == endIndex1) || (i == startIndex2 && i == endIndex2)){
-//            elemViewHolder.ivElem.setImageResource(R.drawable.simple_back);
-//        }
-//        if (i == startIndex1 || i == startIndex2) {
-//            elemViewHolder.ivElem.setImageResource(R.drawable.start_back);
-//        }
-//        else if (i == endIndex1 || i == endIndex2) {
-//            elemViewHolder.ivElem.setImageResource(R.drawable.end_back);
-//        }
-//        else if ((i>=startIndex1 && i<=endIndex1) || (i>=startIndex2 && i<=endIndex2)){
-//            elemViewHolder.ivElem.setImageResource(R.drawable.inner_back);
-//        }
-//        else{
-//            elemViewHolder.ivElem.setImageResource(R.drawable.blank_back);
-//        }
+
+        Integer num = handlerList.get(i).num;
+        elemViewHolder.tvElem.setText(num.toString());
         switch(STATE.get(i)){
             case 0:
-                elemViewHolder.ivElem.setBackgroundResource(DRAWABLE.get(i));
+                elemViewHolder.tvElem.setBackgroundResource(R.drawable.black_circle);
                 break;
             case 1:
-                elemViewHolder.ivElem.setBackgroundResource(RED_DRAWABLE.get(i));
+                elemViewHolder.tvElem.setBackgroundResource(R.drawable.red_circle);
                 break;
             case 2:
-                elemViewHolder.ivElem.setBackgroundResource(YELLOW_DRAWABLE.get(i));
+                elemViewHolder.tvElem.setBackgroundResource(R.drawable.yellow_circle);
                 break;
             case 3:
-                elemViewHolder.ivElem.setBackgroundResource(GREEN_DRAWABLE.get(i));
+                elemViewHolder.tvElem.setBackgroundResource(R.drawable.blue_circle);
                 break;
         }
 
@@ -113,11 +95,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Collections.swap(STATE, fromPosition, toPosition);
-                Collections.swap(DRAWABLE, fromPosition, toPosition);
-                Collections.swap(RED_DRAWABLE, fromPosition, toPosition);
-                Collections.swap(YELLOW_DRAWABLE, fromPosition, toPosition);
-                Collections.swap(GREEN_DRAWABLE,fromPosition,toPosition);
+                Collections.swap(handlerList, fromPosition, toPosition);
                 notifyItemMoved(fromPosition, toPosition);
                 notifyItemMoved(toPosition - 1, fromPosition);
                 handler.postDelayed(new Runnable() {
@@ -134,8 +112,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         },1000);
     }
     private void highlight(final int index1,final int index2){
-
-
+        //TODO:replace into toColor
         STATE.set(index1,2);
         STATE.set(index2,2);
         notifyItemChanged(index1);
@@ -190,7 +167,6 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-
                             Log.d("DEBUG","swap start " + curr + " " + (curr+1));
                             notifyItemsSwapped(curr, curr+1);
                         }
@@ -381,115 +357,6 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         }
         return true;
     }
-//    private int doQuickSort(final int low, final int high,int counter) {
-//        Log.d(TAG, String.format("Вызов doQuickSort(%d,%d,%d)", low, high, counter));
-//        if (low >= high) {
-//            return counter;
-//        }
-//        // выбрать опорный элемент
-//        iter1 = low;
-//        iter2 = high;
-//        middle = iter1 + (iter2 - iter1) / 2;
-//        Log.d(TAG, String.format("Подсветить зеленым элемент под номером %d (%d)",middle,list.get(middle).num));
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-////                groupIndexes1 = new Pair<>(low,finMid-1);
-////                groupIndexes2 = new Pair<>(finMid+1,high);
-//                toGreen(middle);
-//                notifyItemRangeChanged(0,getItemCount());
-//            }
-//        },counter);
-//        counter+=1000;
-//        // разделить на подмассивы, который больше и меньше опорного элемента
-//        while (iter1 < iter2) {
-//
-//            int opora = list.get(middle).num;
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    toYellow(iter1);
-//                }
-//            },counter);
-//            counter+=500;
-//            while (iter1 < middle && list.get(iter1).num <= opora) {
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        toBlack(iter1);
-//                    }
-//                },counter);
-//                counter+=500;
-//                iter1++;
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        toYellow(iter1);
-//                    }
-//                },counter);
-//                counter+=500;
-//            }
-//
-//
-//            /////////////////////////////////////////////////////
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    toYellow(iter2);
-//                }
-//            },counter);
-//            counter+=500;
-//            while (iter2 > middle && list.get(iter2).num >= opora) {
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        toBlack(iter1);
-//                    }
-//                },counter);
-//                counter+=500;
-//                iter2--;
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        toYellow(iter1);
-//                    }
-//                },counter);
-//                counter+=500;
-//            }
-//            final int finI = iter1;
-//            final int finJ = iter2;
-//            if (iter1 <= iter2) {//меняем местами
-//                if (iter1 != iter2){
-//                    Log.d(TAG, String.format("Поменять местами элементы под номерами %d и %d (%d,%d)", finI, finJ, list.get(finI).num, list.get(finJ).num));
-//                    Collections.swap(list, iter1, iter2);
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Log.d("DEBUG","swap start " + finI + " " + finJ);
-//                            notifyItemsSwapped(finI, finJ);
-//                            notifyItemRangeChanged(0,getItemCount());
-//                        }
-//                    },counter);
-//                    counter+=2500;
-//                }
-//            }
-//        }
-//
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                toBlack(middle);
-//                notifyItemRangeChanged(0,getItemCount());
-//            }
-//        },counter+1000);
-//        counter+=500;
-//        // вызов рекурсии для сортировки левой и правой части
-////        print_array();
-////        if (low < iter2) doQuickSort(low, middle,counter);
-////        print_array();
-////        if (high > iter1) doQuickSort(middle+1, high,counter);
-//        return counter;
-//    }
     public void shuffle() {
         Random rnd = ThreadLocalRandom.current();
 
@@ -498,12 +365,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
             int index = rnd.nextInt(i + 1);
             // Simple swap
             Collections.swap(list,index,i);
-            Collections.swap(DRAWABLE,index,i);
-            Collections.swap(RED_DRAWABLE,index,i);
-            Collections.swap(YELLOW_DRAWABLE,index,i);
-            Collections.swap(GREEN_DRAWABLE,index,i);
-            Collections.swap(STATE,index,i);
-
+            Collections.swap(handlerList,index,i);
         }
         notifyItemRangeChanged(0,getItemCount());
     }
