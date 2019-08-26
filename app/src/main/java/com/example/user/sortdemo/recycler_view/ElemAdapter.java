@@ -1,53 +1,43 @@
 package com.example.user.sortdemo.recycler_view;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.user.sortdemo.R;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
-import java.util.StringJoiner;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static com.example.user.sortdemo.recycler_view.ItemColor.*;
 
 public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
 
-    private List<Integer> STATE = Arrays.asList(0,0,0,0,0,0,0,0,0);
+    private ArrayList<ItemColor> colorList;
     private ArrayList<Item> list;
     private ArrayList<Item> handlerList;
     private Handler handler;
     private final String TAG = "log";
-    private Context context;
     private TextView comment;
     private Button shuffleButton;
-    //private Pair<Integer,Integer> groupIndexes1 = new Pair<Integer, Integer>(-1,-1);
-    //private Pair<Integer,Integer> groupIndexes2 = new Pair<Integer, Integer>(-1,-1);
     public ElemAdapter(TextView comment,Button shuffleButton) {
         list = new ArrayList<>();
         handlerList = new ArrayList<>();
+        colorList = new ArrayList<>();
         for (int i=1;i<=9;i++){
             Item item = new Item(i);
             list.add(item);
             handlerList.add(item);
+            colorList.add(BLACK);
         }
         this.comment = comment;
         this.shuffleButton = shuffleButton;
@@ -64,17 +54,17 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
 
         Integer num = handlerList.get(i).num;
         elemViewHolder.tvElem.setText(num.toString());
-        switch(STATE.get(i)){
-            case 0:
+        switch(colorList.get(i)){
+            case BLACK:
                 elemViewHolder.tvElem.setBackgroundResource(R.drawable.black_circle);
                 break;
-            case 1:
+            case RED:
                 elemViewHolder.tvElem.setBackgroundResource(R.drawable.red_circle);
                 break;
-            case 2:
+            case YELLOW:
                 elemViewHolder.tvElem.setBackgroundResource(R.drawable.yellow_circle);
                 break;
-            case 3:
+            case BLUE:
                 elemViewHolder.tvElem.setBackgroundResource(R.drawable.blue_circle);
                 break;
         }
@@ -84,60 +74,40 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     public int getItemCount() {
         return list.size();
     }
-    private void notifyItemsSwapped(final int fromPosition,final int toPosition){
-        final int fromState = STATE.get(fromPosition);
-        final int toState = STATE.get(toPosition);
-        STATE.set(fromPosition,1);
-        STATE.set(toPosition,1);
-        notifyItemChanged(fromPosition);
-        notifyItemChanged(toPosition);
-
+    private void notifyItemsSwapped(final int index1,final int index2){
+        changeColor(index1,RED);
+        changeColor(index2,RED);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Collections.swap(handlerList, fromPosition, toPosition);
-                notifyItemMoved(fromPosition, toPosition);
-                notifyItemMoved(toPosition - 1, fromPosition);
+                Collections.swap(handlerList, index1, index2);
+                notifyItemMoved(index1, index2);
+                notifyItemMoved(index2 - 1, index1);
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        STATE.set(fromPosition,fromState);
-                        STATE.set(toPosition,toState);
-                        notifyItemChanged(fromPosition);
-                        notifyItemChanged(toPosition);
-                        Log.d("DEBUG","swap end " + fromPosition + " " + toPosition);
+                        changeColor(index1,BLACK);
+                        changeColor(index2,BLACK);
+                        Log.d("DEBUG","swap finish " + index1 + " " + index2);
                     }
                 },1000);
             }
         },1000);
     }
     private void highlight(final int index1,final int index2){
-        //TODO:replace into toColor
-        STATE.set(index1,2);
-        STATE.set(index2,2);
-        notifyItemChanged(index1);
-        notifyItemChanged(index2);
+        changeColor(index1,YELLOW);
+        changeColor(index2,YELLOW);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                STATE.set(index1,0);
-                STATE.set(index2,0);
-                notifyItemChanged(index1);
-                notifyItemChanged(index2);
-                Log.d("DEBUG","highlight end " + index1 + " " + index2);
+                changeColor(index1,BLACK);
+                changeColor(index2,BLACK);
+                Log.d("DEBUG","highlight finish " + index1 + " " + index2);
             }
         },500);
     }
-    private void toGreen(final int index){
-        STATE.set(index,3);
-        notifyItemChanged(index);
-    }
-    private void toBlack(final int index){
-        STATE.set(index,0);
-        notifyItemChanged(index);
-    }
-    private void toYellow(final int index){
-        STATE.set(index,2);
+    private void changeColor(final int index,final ItemColor color){
+        colorList.set(index,color);
         notifyItemChanged(index);
     }
     private boolean isSorted() {
@@ -149,7 +119,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         return true;
     }
     public void bubble_sort() {
-        int counter = 0;
+        int time = 0;
         for(int j = list.size()-1;j>=0;j--) {
             if (isSorted()) break;
             for (int i = 0; i < j; i++) {
@@ -160,8 +130,8 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
                         Log.d("DEBUG","highlight start " + curr + " " + (curr+1));
                         highlight(curr,curr+1);
                     }
-                }, counter);
-                counter +=1000;
+                }, time);
+                time +=1000;
                 if (list.get(curr).num > list.get(curr + 1).num) {
                     Collections.swap(list, curr, curr + 1);
                     handler.postDelayed(new Runnable() {
@@ -170,8 +140,8 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
                             Log.d("DEBUG","swap start " + curr + " " + (curr+1));
                             notifyItemsSwapped(curr, curr+1);
                         }
-                    }, counter);
-                    counter +=2500;
+                    }, time);
+                    time +=2500;
                 }
             }
         }
@@ -185,11 +155,11 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     }
     public void quick_sort() {
         print_array();
-        counter = 0;
-        quickSort(0,list.size()-1);
+        //counter = 0;
+        //quickSort(0,list.size()-1);
         //Log.d(TAG,"Длительность сортировки: " + seconds);
     }
-    private int counter;
+/*    private int counter;
     public void quickSort(int low, int high) {
         if (low >= high)
             return;//завершить выполнение если уже нечего делить
@@ -356,7 +326,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
             if (list.get(i).num<opora) return false;
         }
         return true;
-    }
+    }*/
     public void shuffle() {
         Random rnd = ThreadLocalRandom.current();
 
