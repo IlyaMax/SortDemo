@@ -4,4 +4,6 @@
     <string name="quick_sort">Сортировка Хоара</string>
     <string name="merge_sort">Сортировка слиянием</string>
     <string name="bubble_sort">Сортировка пузырьком</string>
+    <string name="start_button">запуск</string>
+    <string name="shuffle_button">перемешать</string>
 </resources>
