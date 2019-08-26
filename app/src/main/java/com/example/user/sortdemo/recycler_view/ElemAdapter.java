@@ -29,6 +29,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     private final String TAG = "log";
     private TextView comment;
     private Button shuffleButton;
+    private int time;
     public ElemAdapter(TextView comment,Button shuffleButton) {
         list = new ArrayList<>();
         handlerList = new ArrayList<>();
@@ -67,6 +68,9 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
             case BLUE:
                 elemViewHolder.tvElem.setBackgroundResource(R.drawable.blue_circle);
                 break;
+            case ORANGE:
+                elemViewHolder.tvElem.setBackgroundResource(R.drawable.orange_circle);
+                break;
         }
 
     }
@@ -75,6 +79,8 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         return list.size();
     }
     private void notifyItemsSwapped(final int index1,final int index2){
+        //final ItemColor color1 = colorList.get(index1);
+        //final ItemColor color2 = colorList.get(index2);
         changeColor(index1,RED);
         changeColor(index2,RED);
         handler.postDelayed(new Runnable() {
@@ -119,7 +125,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         return true;
     }
     public void bubble_sort() {
-        int time = 0;
+        time = 0;
         for(int j = list.size()-1;j>=0;j--) {
             if (isSorted()) break;
             for (int i = 0; i < j; i++) {
@@ -155,18 +161,17 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
     }
     public void quick_sort() {
         print_array();
-        //counter = 0;
-        //quickSort(0,list.size()-1);
+        time = 0;
+        quickSort(0,list.size()-1);
         //Log.d(TAG,"Длительность сортировки: " + seconds);
     }
-/*    private int counter;
-    public void quickSort(int low, int high) {
+    private void quickSort(int low, int high) {
         if (low >= high)
             return;//завершить выполнение если уже нечего делить
 
         // выбрать опорный элемент
         int middle = low + (high - low) / 2;
-        final int opora = list.get(middle).num;
+        final int pivot = list.get(middle).num;
         final int finMid_1 = middle;
 
         // разделить на подмассивы, который больше и меньше опорного элемента
@@ -174,7 +179,6 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
         int j = high;
         final int finLow = low;
         final int finHigh = high;
-        final int finOpora = opora;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -182,124 +186,122 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
                         : "Начало сортировки подмассива от " + finLow + " до " + finHigh;
                 comment.setText(msg);
             }
-        },counter);
-        counter+=3000;
+        },time);
+        time+=3000;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String msg = "Опорным элементом выбираем " + finOpora;
+                String msg = "Опорным элементом выбираем " + pivot;
                 comment.setText(msg);
             }
-        },counter);
-        counter+=1000;
+        },time);
+        time+=1000;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                toGreen(finMid_1);
+                changeColor(finMid_1,BLUE);
             }
-        },counter);
-        counter+=1000;
+        },time);
+        time+=1000;
+
         while (i < j) {
             final int finMid_2 = middle;
-            final int finI_1 = i;
             if (isPartitioned(middle)) break;
-            if (list.get(i).num < opora) {
+            //final int finJ_1 = j;
+            do {
+                final int finI_1 = i;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        toYellow(finI_1);
+                        changeColor(finI_1, YELLOW);
                     }
-                }, counter);
-                counter += 500;
-            }
-            while (list.get(i).num < opora) {
-                final int finI_2 = i;
+                }, time);
+                time += 500;
+                if (list.get(i).num < pivot) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeColor(finI_1, BLACK);
+                        }
+                    }, time);
+                    time += 500;
+                }
+                else {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeColor(finI_1, RED);
+                        }
+                    }, time);
+                    time += 500;
+                }
+            }while (list.get(i++).num < pivot);
+            i--;
+            do {
+                final int finJ_1 = j;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        toBlack(finI_2);
+                        changeColor(finJ_1, YELLOW);
                     }
-                },counter);
-                counter += 500;
-                i++;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toYellow(finI_2+1);
-                    }
-                },counter);
-                counter += 500;
-            }
-            final int finJ_1 = j;
-            if (list.get(j).num > opora){
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toYellow(finJ_1);
-                    }
-                },counter);
-                counter += 500;
-            }
-            while (list.get(j).num > opora) {
-                final int finJ_2 = j;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toBlack(finJ_2);
-                    }
-                },counter);
-                counter += 500;
-                j--;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toYellow(finJ_2-1);
-                    }
-                },counter);
-                counter += 500;
-            }
+                }, time);
+                time += 500;
+                if (list.get(j).num > pivot) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeColor(finJ_1, BLACK);
+                        }
+                    }, time);
+                    time += 500;
+                }
+                else {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            changeColor(finJ_1, RED);
+                        }
+                    }, time);
+                    time += 500;
+                }
+            }while (list.get(j--).num > pivot);
+            j++;
             if (i <= j) {//меняем местами
                 Collections.swap(list,i,j);
                 final int finI_2 = i,finJ_2 = j;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        toBlack(finI_2);
-                        toBlack(finJ_2);
                         if (finI_2 != finJ_2) notifyItemsSwapped(finI_2,finJ_2);
                     }
-                },counter);
-                counter += 2500;
+                },time);
+                time += 2500;
                 if (finJ_2 == finMid_2){
                     middle = finI_2;
                 }
                 if (finI_2 == finMid_2){
                     middle = finJ_2;
                 }
+                final int finMid_3 = middle;
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (finJ_2 == finMid_2){
-                            toGreen(finI_2);
-                        }
-                        if (finI_2 == finMid_2){
-                            toGreen(finJ_2);
-                        }
+                        changeColor(finMid_3,BLUE);
                     }
-                },counter);
-                counter+=1000;
+                },time);
+                time+=1000;
             }
         }
-        final int finMid_3 = middle;
+        final int finMid_4 = middle;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                toBlack(finMid_3);
+                changeColor(finMid_4,ORANGE);
             }
-        },counter);
-        counter+=1000;
+        },time);
+        time+=1000;
         // вызов рекурсии для сортировки левой и правой части
-        quickSort(low, middle);
+        quickSort(low, middle-1);
         quickSort(middle+1, high);
         handler.postDelayed(new Runnable() {
             @Override
@@ -308,14 +310,16 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
                 if (finLow == 0&&finHigh == list.size()-1){
                     msg = "Mассив отсортирован";
                     shuffleButton.setEnabled(true);
+                    for(int item=finLow;item<=finHigh;item++)changeColor(item,BLACK);
                 }
                 else{
                     msg = "Сортировка подмассива от " + finLow + " до " + finHigh + " завершена";
+                    for(int item=finLow;item<=finHigh;item++)changeColor(item,ORANGE);
                 }
                 comment.setText(msg);
             }
-        },counter);
-        counter += 3000;
+        },time);
+        time += 3000;
     }
     private boolean isPartitioned(int mid){
         int opora = list.get(mid).num;
@@ -326,7 +330,7 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
             if (list.get(i).num<opora) return false;
         }
         return true;
-    }*/
+    }
     public void shuffle() {
         Random rnd = ThreadLocalRandom.current();
 
