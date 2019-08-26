@@ -1,4 +1,4 @@
-package com.example.user.sortdemo;
+package com.example.user.sortdemo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,26 +7,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.user.sortdemo.demo_activities.BubbleSortActivity;
-import com.example.user.sortdemo.demo_activities.QuickSortActivity;
+import com.example.user.sortdemo.R;
 
 public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        Button quickSortButton = (Button) findViewById(R.id.quick_sort);
-        Button bubbleSortButton = (Button) findViewById(R.id.bubble_sort);
+        Button quickSortButton = findViewById(R.id.quick_sort);
+        Button bubbleSortButton = findViewById(R.id.bubble_sort);
+        final Intent intent = new Intent(MenuActivity.this, SortActivity.class);
         quickSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MenuActivity.this, QuickSortActivity.class));
+                intent.putExtra("sort_type","quick");
+                startActivity(intent);
             }
         });
         bubbleSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MenuActivity.this, BubbleSortActivity.class));
+                intent.putExtra("sort_type","bubble");
+                startActivity(intent);
             }
         });
     }

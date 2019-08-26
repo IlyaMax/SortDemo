@@ -1,4 +1,4 @@
-package com.example.user.sortdemo.demo_activities;
+package com.example.user.sortdemo.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,13 +12,15 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.user.sortdemo.R;
-import com.example.user.sortdemo.recycler_view.ElemAdapter;
+import com.example.user.sortdemo.recycler_view.adapters.BubbleSortAdapter;
+import com.example.user.sortdemo.recycler_view.adapters.QuickSortAdapter;
+import com.example.user.sortdemo.recycler_view.adapters.SortAdapter;
 
-public class QuickSortActivity extends AppCompatActivity {
+public class SortActivity extends AppCompatActivity {
     ConstraintLayout constraintLayout;
     RecyclerView recyclerView;
     TextView comment;
-    ElemAdapter adapter;
+    SortAdapter adapter;
     Button shuffleButton;
     Button sortButton;
     @Override
@@ -30,7 +32,8 @@ public class QuickSortActivity extends AppCompatActivity {
         constraintLayout = findViewById(R.id.mainLayout);
         recyclerView = findViewById(R.id.recyclerView);
         comment = findViewById(R.id.comment);
-        adapter = new ElemAdapter(comment,shuffleButton);
+        String sortType = getIntent().getExtras().getString("sort_type");
+        adapter = (sortType.equals("quick"))?new QuickSortAdapter(comment,shuffleButton):new BubbleSortAdapter(comment,shuffleButton);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.setAdapter(adapter);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -46,7 +49,7 @@ public class QuickSortActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("DEBUG","Sorting started");
                 comment.setText("");
-                adapter.quick_sort();
+                adapter.sort();
                 shuffleButton.setEnabled(false);
             }
         });
