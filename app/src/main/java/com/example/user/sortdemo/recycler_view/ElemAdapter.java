@@ -150,7 +150,33 @@ public class ElemAdapter extends RecyclerView.Adapter<ElemViewHolder>{
                     time +=2500;
                 }
             }
+            final int finJ = j;
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    changeColor(finJ,ORANGE);
+                }
+            }, time);
+            time +=2500;
         }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<list.size();i++)changeColor(i,ORANGE);
+
+            }
+        }, time);
+        time +=1000;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                comment.setText("Mассив отсортирован");
+                shuffleButton.setEnabled(true);
+                for(int i=0;i<list.size();i++)changeColor(i,BLACK);
+            }
+        },time);
+        time+=2000;
+
     }
     private void print_array(){
         String array = "array: ";
