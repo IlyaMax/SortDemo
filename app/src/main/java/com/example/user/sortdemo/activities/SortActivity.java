@@ -17,12 +17,14 @@ import com.example.user.sortdemo.recycler_view.adapters.QuickSortAdapter;
 import com.example.user.sortdemo.recycler_view.adapters.SortAdapter;
 
 public class SortActivity extends AppCompatActivity {
+
     ConstraintLayout constraintLayout;
     RecyclerView recyclerView;
     TextView comment;
     SortAdapter adapter;
     Button shuffleButton;
     Button sortButton;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,8 +35,8 @@ public class SortActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         comment = findViewById(R.id.comment);
         String sortType = getIntent().getExtras().getString("sort_type");
-        adapter = (sortType.equals("quick"))?new QuickSortAdapter(comment,shuffleButton):new BubbleSortAdapter(comment,shuffleButton);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(comment, shuffleButton) : new BubbleSortAdapter(comment, shuffleButton);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
@@ -47,7 +49,7 @@ public class SortActivity extends AppCompatActivity {
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DEBUG","Sorting started");
+                Log.d("DEBUG", "Sorting started");
                 comment.setText("");
                 adapter.sort();
                 shuffleButton.setEnabled(false);

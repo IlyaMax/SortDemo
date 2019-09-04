@@ -25,6 +25,7 @@ import static com.example.user.sortdemo.recycler_view.ItemColor.RED;
 import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 
 public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
+
     private ArrayList<ItemColor> colorList;
     protected ArrayList<Item> list;
     private ArrayList<Item> handlerList;
@@ -33,12 +34,14 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
     protected TextView comment;
     protected Button shuffleButton;
     protected int time;
+
     public abstract void sort();
-    protected SortAdapter(TextView comment,Button shuffleButton) {
+
+    protected SortAdapter(TextView comment, Button shuffleButton) {
         list = new ArrayList<>();
         handlerList = new ArrayList<>();
         colorList = new ArrayList<>();
-        for (int i=1;i<=9;i++){
+        for (int i = 1; i <= 9; i++) {
             Item item = new Item(i);
             list.add(item);
             handlerList.add(item);
@@ -47,6 +50,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
         this.comment = comment;
         this.shuffleButton = shuffleButton;
     }
+
     @NonNull
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -54,10 +58,11 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
         handler = new Handler();
         return new ItemHolder(itemView);
     }
+
     @Override
     public void onBindViewHolder(@NonNull ItemHolder itemHolder, int i) {
-        itemHolder.tvElem.setText(String.format("%d",handlerList.get(i).num));
-        switch(colorList.get(i)){
+        itemHolder.tvElem.setText(String.format("%d", handlerList.get(i).num));
+        switch (colorList.get(i)) {
             case BLACK:
                 itemHolder.tvElem.setBackgroundResource(R.drawable.black_circle);
                 break;
@@ -74,17 +79,18 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
                 itemHolder.tvElem.setBackgroundResource(R.drawable.orange_circle);
                 break;
         }
-
     }
+
     @Override
     public int getItemCount() {
         return list.size();
     }
-    protected void notifyItemsSwapped(final int index1,final int index2){
+
+    protected void notifyItemsSwapped(final int index1, final int index2) {
         //final ItemColor color1 = colorList.get(index1);
         //final ItemColor color2 = colorList.get(index2);
-        changeColor(index1,RED);
-        changeColor(index2,RED);
+        changeColor(index1, RED);
+        changeColor(index2, RED);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -94,30 +100,33 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        changeColor(index1,BLACK);
-                        changeColor(index2,BLACK);
-                        Log.d("DEBUG","swap finish " + index1 + " " + index2);
+                        changeColor(index1, BLACK);
+                        changeColor(index2, BLACK);
+                        Log.d("DEBUG", "swap finish " + index1 + " " + index2);
                     }
-                },1000);
+                }, 1000);
             }
-        },1000);
+        }, 1000);
     }
-    protected void highlight(final int index1,final int index2){
-        changeColor(index1,YELLOW);
-        changeColor(index2,YELLOW);
+
+    protected void highlight(final int index1, final int index2) {
+        changeColor(index1, YELLOW);
+        changeColor(index2, YELLOW);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                changeColor(index1,BLACK);
-                changeColor(index2,BLACK);
-                Log.d("DEBUG","highlight finish " + index1 + " " + index2);
+                changeColor(index1, BLACK);
+                changeColor(index2, BLACK);
+                Log.d("DEBUG", "highlight finish " + index1 + " " + index2);
             }
-        },500);
+        }, 500);
     }
-    protected void changeColor(final int index,final ItemColor color){
-        colorList.set(index,color);
+
+    protected void changeColor(final int index, final ItemColor color) {
+        colorList.set(index, color);
         notifyItemChanged(index);
     }
+
     protected boolean isSorted() {
         for (int i = 1; i < list.size(); i++) {
             if (list.get(i - 1).num > list.get(i).num) {
@@ -126,24 +135,24 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
         }
         return true;
     }
-    protected void print_array(){
+
+    protected void print_array() {
         StringBuilder array = new StringBuilder("array: ");
-        for(Item item:list){
+        for (Item item : list) {
             array.append(" ").append(item.num);
         }
         Log.d(TAG, array.toString());
     }
+
     public void shuffle() {
         Random rnd = ThreadLocalRandom.current();
 
-        for (int i = 0; i < list.size(); i++)
-        {
+        for (int i = 0; i < list.size(); i++) {
             int index = rnd.nextInt(i + 1);
             // Simple swap
-            Collections.swap(list,index,i);
-            Collections.swap(handlerList,index,i);
+            Collections.swap(list, index, i);
+            Collections.swap(handlerList, index, i);
         }
-        notifyItemRangeChanged(0,getItemCount());
+        notifyItemRangeChanged(0, getItemCount());
     }
-
 }

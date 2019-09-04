@@ -9,7 +9,9 @@ import android.widget.TextView;
 import com.example.user.sortdemo.R;
 
 public class ItemHolder extends RecyclerView.ViewHolder {
+
     public TextView tvElem;
+
     public ItemHolder(@NonNull View itemView) {
         super(itemView);
         tvElem = itemView.findViewById(R.id.tvElem);

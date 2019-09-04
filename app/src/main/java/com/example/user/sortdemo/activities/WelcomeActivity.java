@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.example.user.sortdemo.R;
 
 public class WelcomeActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

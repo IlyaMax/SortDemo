@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.example.user.sortdemo.R;
 
 public class MenuActivity extends AppCompatActivity {
+    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,14 +21,14 @@ public class MenuActivity extends AppCompatActivity {
         quickSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.putExtra("sort_type","quick");
+                intent.putExtra("sort_type", "quick");
                 startActivity(intent);
             }
         });
         bubbleSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.putExtra("sort_type","bubble");
+                intent.putExtra("sort_type", "bubble");
                 startActivity(intent);
             }
         });
