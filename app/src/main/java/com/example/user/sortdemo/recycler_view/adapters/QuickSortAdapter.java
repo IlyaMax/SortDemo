@@ -31,7 +31,7 @@ public class QuickSortAdapter extends SortAdapter {
 
         // выбрать опорный элемент
         int middle = low + (high - low) / 2;
-        final int pivot = list.get(middle).num;
+        final int pivot = list.get(middle).getValue();
         final int finMid_1 = middle;
 
         // разделить на подмассивы, который больше и меньше опорного элемента
@@ -77,7 +77,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }
                 }, time);
                 time += 500;
-                if (list.get(i).num < pivot) {
+                if (list.get(i).getValue() < pivot) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -94,7 +94,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }, time);
                     time += 500;
                 }
-            } while (list.get(i++).num < pivot);
+            } while (list.get(i++).getValue() < pivot);
             i--;
             do {
                 final int finJ_1 = j;
@@ -105,7 +105,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }
                 }, time);
                 time += 500;
-                if (list.get(j).num > pivot) {
+                if (list.get(j).getValue() > pivot) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -122,7 +122,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }, time);
                     time += 500;
                 }
-            } while (list.get(j--).num > pivot);
+            } while (list.get(j--).getValue() > pivot);
             j++;
             if (i <= j) {//меняем местами
                 Collections.swap(list, i, j);
@@ -180,12 +180,12 @@ public class QuickSortAdapter extends SortAdapter {
     }
 
     private boolean isPartitioned(int mid) {
-        int opora = list.get(mid).num;
+        int opora = list.get(mid).getValue();
         for (int i = 0; i < mid; i++) {
-            if (list.get(i).num > opora) return false;
+            if (list.get(i).getValue() > opora) return false;
         }
         for (int i = list.size() - 1; i > mid; i--) {
-            if (list.get(i).num < opora) return false;
+            if (list.get(i).getValue() < opora) return false;
         }
         return true;
     }

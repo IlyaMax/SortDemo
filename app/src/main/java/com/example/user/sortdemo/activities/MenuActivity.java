@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.user.sortdemo.R;
+import com.example.user.sortdemo.base.SortType;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -22,7 +23,7 @@ public class MenuActivity extends AppCompatActivity {
         quickSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.putExtra("sort_type", "quick");
+                intent.putExtra(SortActivity.EXTRA_SORT_TYPE, SortType.Quick.toString());
                 startActivity(intent);
             }
         });
@@ -31,7 +32,16 @@ public class MenuActivity extends AppCompatActivity {
         bubbleSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.putExtra("sort_type", "bubble");
+                intent.putExtra(SortActivity.EXTRA_SORT_TYPE, SortType.Bubble.toString());
+                startActivity(intent);
+            }
+        });
+
+        Button reactiveButton = findViewById(R.id.button_reactive);
+        reactiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.putExtra(SortActivity.EXTRA_SORT_TYPE, SortType.Reactive.toString());
                 startActivity(intent);
             }
         });

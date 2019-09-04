@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.user.sortdemo.R;
-import com.example.user.sortdemo.recycler_view.Item;
+import com.example.user.sortdemo.recycler_view.NumberItem;
 import com.example.user.sortdemo.recycler_view.ItemColor;
 import com.example.user.sortdemo.recycler_view.ItemHolder;
 
@@ -27,8 +27,8 @@ import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     private ArrayList<ItemColor> colorList;
-    protected ArrayList<Item> list;
-    private ArrayList<Item> handlerList;
+    protected ArrayList<NumberItem> list;
+    private ArrayList<NumberItem> handlerList;
     protected Handler handler;
     private final String TAG = "sortLog";
     protected TextView comment;
@@ -42,7 +42,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
         handlerList = new ArrayList<>();
         colorList = new ArrayList<>();
         for (int i = 1; i <= 9; i++) {
-            Item item = new Item(i);
+            NumberItem item = new NumberItem(i);
             list.add(item);
             handlerList.add(item);
             colorList.add(BLACK);
@@ -61,7 +61,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder itemHolder, int i) {
-        itemHolder.tvElem.setText(String.format("%d", handlerList.get(i).num));
+        itemHolder.tvElem.setText(String.format("%d", handlerList.get(i).getValue()));
         switch (colorList.get(i)) {
             case BLACK:
                 itemHolder.tvElem.setBackgroundResource(R.drawable.black_circle);
@@ -129,7 +129,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     protected boolean isSorted() {
         for (int i = 1; i < list.size(); i++) {
-            if (list.get(i - 1).num > list.get(i).num) {
+            if (list.get(i - 1).getValue() > list.get(i).getValue()) {
                 return false;
             }
         }
@@ -138,8 +138,8 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     protected void print_array() {
         StringBuilder array = new StringBuilder("array: ");
-        for (Item item : list) {
-            array.append(" ").append(item.num);
+        for (NumberItem item : list) {
+            array.append(" ").append(item.getValue());
         }
         Log.d(TAG, array.toString());
     }

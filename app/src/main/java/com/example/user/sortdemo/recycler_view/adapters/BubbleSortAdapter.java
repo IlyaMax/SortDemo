@@ -29,7 +29,7 @@ public class BubbleSortAdapter extends SortAdapter {
                     }
                 }, time);
                 time += 1000;
-                if (list.get(curr).num > list.get(curr + 1).num) {
+                if (list.get(curr).getValue() > list.get(curr + 1).getValue()) {
                     Collections.swap(list, curr, curr + 1);
                     handler.postDelayed(new Runnable() {
                         @Override

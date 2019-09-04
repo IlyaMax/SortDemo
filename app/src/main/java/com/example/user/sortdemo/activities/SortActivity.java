@@ -12,16 +12,27 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.user.sortdemo.R;
+import com.example.user.sortdemo.base.SortType;
+import com.example.user.sortdemo.recycler_view.NumberItem;
 import com.example.user.sortdemo.recycler_view.adapters.BubbleSortAdapter;
+import com.example.user.sortdemo.recycler_view.adapters.CSortAdapter;
 import com.example.user.sortdemo.recycler_view.adapters.QuickSortAdapter;
 import com.example.user.sortdemo.recycler_view.adapters.SortAdapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 public class SortActivity extends AppCompatActivity {
+
+    public static final String EXTRA_SORT_TYPE = "sort_type";
 
     ConstraintLayout constraintLayout;
     RecyclerView recyclerView;
     TextView comment;
     SortAdapter adapter;
+    // FIXME удалить временный адаптер
+    CSortAdapter adapterNew;
     Button shuffleButton;
     Button sortButton;
 
@@ -31,12 +42,33 @@ public class SortActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sort);
         findActivitiesViews();
 
-        String sortType = getIntent().getExtras().getString("sort_type");
-        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(comment, shuffleButton)
-                : new BubbleSortAdapter(comment, shuffleButton);
+        String sortType = getIntent().getExtras().getString(EXTRA_SORT_TYPE);
+//        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(comment, shuffleButton)
+//                : new BubbleSortAdapter(comment, shuffleButton);
+        switch (SortType.valueOf(sortType)) {
+            case Bubble:
+                adapter = new BubbleSortAdapter(comment, shuffleButton);
+            case Quick:
+                adapter = new QuickSortAdapter(comment, shuffleButton);
+            case Reactive:
+                // FIXME удалить временную инициализацию элементов
+                ArrayList<NumberItem> items = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    items.add(new NumberItem(i));
+                }
+                adapterNew = new CSortAdapter(items);
+            default:
+
+        }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(adapter);
+        if (adapter == null) {
+            recyclerView.setAdapter(adapterNew);
+            shuffleButton.setVisibility(View.GONE);
+            sortButton.setVisibility(View.GONE);
+        } else {
+            recyclerView.setAdapter(adapter);
+        }
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
         shuffleButton.setOnClickListener(new View.OnClickListener() {

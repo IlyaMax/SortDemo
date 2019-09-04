@@ -8,6 +8,6 @@
     android:background="@drawable/circle"
     android:backgroundTint="@color/yellow"
     android:gravity="center"
-    android:textColor="@color/black"
+    android:textColor="@color/text_item"
     android:textSize="24sp"
     tools:text="1" />
