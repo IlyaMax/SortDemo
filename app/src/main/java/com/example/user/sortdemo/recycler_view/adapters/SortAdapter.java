@@ -94,6 +94,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                // FIXME swap не будет работать если index1 > index2
                 Collections.swap(handlerList, index1, index2);
                 notifyItemMoved(index1, index2);
                 notifyItemMoved(index2 - 1, index1);

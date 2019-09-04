@@ -6,7 +6,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,8 +19,6 @@ import com.example.user.sortdemo.recycler_view.adapters.QuickSortAdapter;
 import com.example.user.sortdemo.recycler_view.adapters.SortAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class SortActivity extends AppCompatActivity {
 

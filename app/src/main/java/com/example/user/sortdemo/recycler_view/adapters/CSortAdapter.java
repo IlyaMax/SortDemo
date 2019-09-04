@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.user.sortdemo.R;
 import com.example.user.sortdemo.recycler_view.NumberItem;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CSortAdapter extends RecyclerView.Adapter<CSortAdapter.ViewHolder> {
@@ -27,12 +28,16 @@ public class CSortAdapter extends RecyclerView.Adapter<CSortAdapter.ViewHolder> 
     }
 
     public void swapItems(int firstId, int secondId) {
+        Collections.swap(items, firstId, secondId);
+//        NumberItem temp = items.get(secondId);
+//        items.set(secondId, items.get(firstId));
+//        items.set(firstId, temp);
 
-        NumberItem temp = items.get(secondId);
-        items.set(secondId, items.get(firstId));
-        items.set(firstId, temp);
-
-        notifyItemMoved(firstId, secondId);
+        // TODO перепроверить правильный swap
+        int minId = Math.min(firstId, secondId);
+        int maxId = Math.max(firstId, secondId);
+        notifyItemMoved(minId, maxId);
+        notifyItemMoved(maxId - 1, minId);
 
     }
 
