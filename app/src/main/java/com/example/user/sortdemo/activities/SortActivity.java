@@ -29,13 +29,12 @@ public class SortActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sort);
-        shuffleButton = findViewById(R.id.shuffle);
-        sortButton = findViewById(R.id.start);
-        constraintLayout = findViewById(R.id.mainLayout);
-        recyclerView = findViewById(R.id.recyclerView);
-        comment = findViewById(R.id.comment);
+        findActivitiesViews();
+
         String sortType = getIntent().getExtras().getString("sort_type");
-        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(comment, shuffleButton) : new BubbleSortAdapter(comment, shuffleButton);
+        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(comment, shuffleButton)
+                : new BubbleSortAdapter(comment, shuffleButton);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -46,14 +45,22 @@ public class SortActivity extends AppCompatActivity {
                 adapter.shuffle();
             }
         });
+
         sortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DEBUG", "Sorting started");
                 comment.setText("");
                 adapter.sort();
                 shuffleButton.setEnabled(false);
             }
         });
+    }
+
+    private void findActivitiesViews() {
+        shuffleButton = findViewById(R.id.shuffle);
+        sortButton = findViewById(R.id.start);
+        constraintLayout = findViewById(R.id.mainLayout);
+        recyclerView = findViewById(R.id.recyclerView);
+        comment = findViewById(R.id.comment);
     }
 }

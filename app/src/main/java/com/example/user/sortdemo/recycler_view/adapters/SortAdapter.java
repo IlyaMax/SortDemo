@@ -54,7 +54,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
     @NonNull
     @Override
     public ItemHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.activity_item, viewGroup, false);
+        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_number, viewGroup, false);
         handler = new Handler();
         return new ItemHolder(itemView);
     }

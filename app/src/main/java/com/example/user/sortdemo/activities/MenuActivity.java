@@ -10,14 +10,15 @@ import android.widget.Button;
 import com.example.user.sortdemo.R;
 
 public class MenuActivity extends AppCompatActivity {
-    
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        Button quickSortButton = findViewById(R.id.quick_sort);
-        Button bubbleSortButton = findViewById(R.id.bubble_sort);
+
         final Intent intent = new Intent(MenuActivity.this, SortActivity.class);
+
+        Button quickSortButton = findViewById(R.id.quick_sort);
         quickSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -25,6 +26,8 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button bubbleSortButton = findViewById(R.id.bubble_sort);
         bubbleSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
