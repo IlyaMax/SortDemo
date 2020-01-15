@@ -1,71 +1,59 @@
 package com.example.user.sortdemo.recycler_view.adapters;
 
-import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
-
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.example.user.sortdemo.recycler_view.ItemColor.BLACK;
 import static com.example.user.sortdemo.recycler_view.ItemColor.ORANGE;
+import static com.example.user.sortdemo.recycler_view.ItemColor.RED;
+import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 
 public class BubbleSortAdapter extends SortAdapter {
-    public BubbleSortAdapter(TextView comment, Button shuffleButton) {
-        super(comment, shuffleButton);
+    public BubbleSortAdapter(Action callback) {
+        super(callback);
+    }
+
+    private Observable<SortTask> getSortPlan() {
+        return Observable.create(emitter -> {
+            int j;
+            for (j = sortList.size() - 1; j >= 0; j--) {
+                if (isSorted()) break;
+                for (int i = 0; i < j; i++) {
+                    emitter.onNext(new HighlightTask(YELLOW, i, i + 1));
+                    emitter.onNext(new HighlightTask(BLACK, i, i + 1));
+                    if (sortList.get(i) > sortList.get(i + 1)) {
+                        emitter.onNext(new HighlightTask(RED, i, i + 1));
+                        emitter.onNext(new SwapTask(i, i + 1));
+                        Collections.swap(sortList, i, i + 1);
+                        emitter.onNext(new HighlightTask(BLACK, i, i + 1));
+                    }
+                }
+                emitter.onNext(new HighlightTask(ORANGE, j));
+            }
+            for (int i = j; i >= 0; i--) emitter.onNext(new HighlightTask(ORANGE, i));
+            emitter.onNext(() -> {
+                for (int i = 0; i < sortList.size(); i++) changeColor(i, BLACK);
+                try {
+                    callback.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 
     public void sort() {
-        time = 0;
-        for(int j = list.size()-1;j>=0;j--) {
-            if (isSorted()) break;
-            for (int i = 0; i < j; i++) {
-                final int curr = i;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("DEBUG","highlight start " + curr + " " + (curr+1));
-                        highlight(curr,curr+1);
-                    }
-                }, time);
-                time +=1000;
-                if (list.get(curr).num > list.get(curr + 1).num) {
-                    Collections.swap(list, curr, curr + 1);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("DEBUG","swap start " + curr + " " + (curr+1));
-                            notifyItemsSwapped(curr, curr+1);
-                        }
-                    }, time);
-                    time +=2500;
-                }
-            }
-            final int finJ = j;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    changeColor(finJ,ORANGE);
-                }
-            }, time);
-            time +=2500;
-        }
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                for(int i=0;i<list.size();i++)changeColor(i,ORANGE);
-
-            }
-        }, time);
-        time +=1000;
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                comment.setText("Mассив отсортирован");
-                shuffleButton.setEnabled(true);
-                for(int i=0;i<list.size();i++)changeColor(i,BLACK);
-            }
-        },time);
-        time+=2000;
+        Disposable disposable = getSortPlan()
+                .zipWith(Observable.interval(SHORT_INTERVAL, TimeUnit.MILLISECONDS), (item, interval) -> item)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(SortTask::execute, Throwable::printStackTrace);
 
     }
 }

@@ -16,6 +16,8 @@ import com.example.user.sortdemo.recycler_view.adapters.BubbleSortAdapter;
 import com.example.user.sortdemo.recycler_view.adapters.QuickSortAdapter;
 import com.example.user.sortdemo.recycler_view.adapters.SortAdapter;
 
+import io.reactivex.functions.Action;
+
 public class SortActivity extends AppCompatActivity {
     ConstraintLayout constraintLayout;
     RecyclerView recyclerView;
@@ -23,6 +25,7 @@ public class SortActivity extends AppCompatActivity {
     SortAdapter adapter;
     Button shuffleButton;
     Button sortButton;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,25 +36,21 @@ public class SortActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         comment = findViewById(R.id.comment);
         String sortType = getIntent().getExtras().getString("sort_type");
-        adapter = (sortType.equals("quick"))?new QuickSortAdapter(comment,shuffleButton):new BubbleSortAdapter(comment,shuffleButton);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        Action sortFinishedAction = ()->{
+            comment.setText("Mассив отсортирован");
+            shuffleButton.setEnabled(true);
+        };
+        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(sortFinishedAction) : new BubbleSortAdapter(sortFinishedAction);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        shuffleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adapter.shuffle();
-            }
-        });
-        sortButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("DEBUG","Sorting started");
-                comment.setText("");
-                adapter.sort();
-                shuffleButton.setEnabled(false);
-            }
+        shuffleButton.setOnClickListener(v -> adapter.shuffle());
+        sortButton.setOnClickListener(v -> {
+            Log.d("DEBUG", "Sorting started");
+            comment.setText("");
+            shuffleButton.setEnabled(false);
+            adapter.sort();
         });
     }
 }

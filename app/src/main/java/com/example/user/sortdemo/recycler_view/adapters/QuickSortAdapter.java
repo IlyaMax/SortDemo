@@ -1,9 +1,8 @@
 package com.example.user.sortdemo.recycler_view.adapters;
 
-import android.widget.Button;
-import android.widget.TextView;
-
 import java.util.Collections;
+
+import io.reactivex.functions.Action;
 
 import static com.example.user.sortdemo.recycler_view.ItemColor.BLACK;
 import static com.example.user.sortdemo.recycler_view.ItemColor.BLUE;
@@ -12,15 +11,15 @@ import static com.example.user.sortdemo.recycler_view.ItemColor.RED;
 import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 
 public class QuickSortAdapter extends SortAdapter {
-    public QuickSortAdapter(TextView comment, Button shuffleButton) {
-        super(comment, shuffleButton);
+    public QuickSortAdapter(Action callback) {
+        super(callback);
     }
 
     @Override
     public void sort() {
         print_array();
         time = 0;
-        quickSort(0,list.size()-1);
+        quickSort(0,sortList.size()-1);
         //Log.d(TAG,"Длительность сортировки: " + seconds);
     }
     private void quickSort(int low, int high) {
@@ -29,7 +28,7 @@ public class QuickSortAdapter extends SortAdapter {
 
         // выбрать опорный элемент
         int middle = low + (high - low) / 2;
-        final int pivot = list.get(middle).num;
+        final int pivot = sortList.get(middle);
         final int finMid_1 = middle;
 
         // разделить на подмассивы, который больше и меньше опорного элемента
@@ -40,7 +39,7 @@ public class QuickSortAdapter extends SortAdapter {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String msg = (finLow == 0 && finHigh == list.size()-1) ? "Начало сортировки массива"
+                String msg = (finLow == 0 && finHigh == sortList.size()-1) ? "Начало сортировки массива"
                         : "Начало сортировки подмассива от " + finLow + " до " + finHigh;
                 comment.setText(msg);
             }
@@ -75,7 +74,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }
                 }, time);
                 time += 500;
-                if (list.get(i).num < pivot) {
+                if (sortList.get(i) < pivot) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -93,7 +92,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }, time);
                     time += 500;
                 }
-            }while (list.get(i++).num < pivot);
+            }while (sortList.get(i++) < pivot);
             i--;
             do {
                 final int finJ_1 = j;
@@ -104,7 +103,7 @@ public class QuickSortAdapter extends SortAdapter {
                     }
                 }, time);
                 time += 500;
-                if (list.get(j).num > pivot) {
+                if (sortList.get(j) > pivot) {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -122,10 +121,10 @@ public class QuickSortAdapter extends SortAdapter {
                     }, time);
                     time += 500;
                 }
-            }while (list.get(j--).num > pivot);
+            }while (sortList.get(j--) > pivot);
             j++;
             if (i <= j) {//меняем местами
-                Collections.swap(list,i,j);
+                Collections.swap(sortList,i,j);
                 final int finI_2 = i,finJ_2 = j;
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -165,7 +164,7 @@ public class QuickSortAdapter extends SortAdapter {
             @Override
             public void run() {
                 String msg;
-                if (finLow == 0&&finHigh == list.size()-1){
+                if (finLow == 0&&finHigh == sortList.size()-1){
                     msg = "Mассив отсортирован";
                     shuffleButton.setEnabled(true);
                     for(int item=finLow;item<=finHigh;item++)changeColor(item,BLACK);
@@ -180,12 +179,12 @@ public class QuickSortAdapter extends SortAdapter {
         time += 3000;
     }
     private boolean isPartitioned(int mid){
-        int opora = list.get(mid).num;
+        int opora = sortList.get(mid);
         for (int i=0;i<mid;i++){
-            if (list.get(i).num>opora) return false;
+            if (sortList.get(i)>opora) return false;
         }
-        for (int i=list.size()-1;i>mid;i--){
-            if (list.get(i).num<opora) return false;
+        for (int i=sortList.size()-1;i>mid;i--){
+            if (sortList.get(i)<opora) return false;
         }
         return true;
     }
