@@ -3,9 +3,21 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#000000</color>
-    <color name="colorBlack">#000000</color>
-    <color name="colorRed">#E53935</color>
-    <color name="colorBlue">#3949AB</color>
-    <color name="colorYellow">#FDD835</color>
-    <color name="colorOrange">#FB8C00</color>
+
+
+    <color name="black">#000000</color>
+    <color name="red">#E53935</color>
+    <color name="blue">#3949AB</color>
+    <color name="yellow">#FDD835</color>
+    <!--FIXME delete orange-->
+    <color name="orange">#FB8C00</color>
+    <color name="green">#ADFF2F</color>
+
+
+    <color name="state_item_success">@color/green</color>
+    <color name="state_item_default">@color/yellow</color>
+    <color name="state_item_compare">@color/red</color>
+    <color name="state_item_move">@color/blue</color>
+    <color name="text_item">@color/black</color>
+    <color name="colorBlack">#000</color>
 </resources>
