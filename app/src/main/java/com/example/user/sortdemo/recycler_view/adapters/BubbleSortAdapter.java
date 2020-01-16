@@ -1,5 +1,8 @@
 package com.example.user.sortdemo.recycler_view.adapters;
 
+import android.widget.Button;
+import android.widget.TextView;
+
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -15,11 +18,11 @@ import static com.example.user.sortdemo.recycler_view.ItemColor.RED;
 import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 
 public class BubbleSortAdapter extends SortAdapter {
-    public BubbleSortAdapter(Action callback) {
-        super(callback);
+    public BubbleSortAdapter(TextView comment, Button shuffleButton) {
+        super(comment,shuffleButton);
     }
 
-    private Observable<SortTask> getSortPlan() {
+    protected Observable<SortTask> getSortPlan() {
         return Observable.create(emitter -> {
             int j;
             for (j = sortList.size() - 1; j >= 0; j--) {
@@ -39,11 +42,8 @@ public class BubbleSortAdapter extends SortAdapter {
             for (int i = j; i >= 0; i--) emitter.onNext(new HighlightTask(ORANGE, i));
             emitter.onNext(() -> {
                 for (int i = 0; i < sortList.size(); i++) changeColor(i, BLACK);
-                try {
-                    callback.run();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                comment.setText("Mассив отсортирован");
+                shuffleButton.setEnabled(true);
             });
         });
     }

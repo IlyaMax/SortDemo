@@ -37,10 +37,9 @@ public class SortActivity extends AppCompatActivity {
         comment = findViewById(R.id.comment);
         String sortType = getIntent().getExtras().getString("sort_type");
         Action sortFinishedAction = ()->{
-            comment.setText("Mассив отсортирован");
-            shuffleButton.setEnabled(true);
+
         };
-        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(sortFinishedAction) : new BubbleSortAdapter(sortFinishedAction);
+        adapter = (sortType.equals("quick")) ? new QuickSortAdapter(comment,shuffleButton) : new BubbleSortAdapter(comment,shuffleButton);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);

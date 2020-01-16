@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import io.reactivex.Observable;
 import io.reactivex.functions.Action;
 
 import static com.example.user.sortdemo.recycler_view.ItemColor.BLACK;
@@ -27,7 +28,6 @@ import static com.example.user.sortdemo.recycler_view.ItemColor.RED;
 import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 
 public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
-    protected Action callback;
     protected final String TAG = "sortLog";
     protected final int SHORT_INTERVAL = 500;
     protected final int LONG_INTERVAL = 1000;
@@ -38,7 +38,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
     protected Button shuffleButton;
     protected int time;
 
-    protected SortAdapter(Action callback) {
+    protected SortAdapter(TextView comment, Button shuffleButton) {
         sortList = new ArrayList<>();
         adapterList = new ArrayList<>();
         for (int i = 1; i <= 9; i++) {
@@ -46,9 +46,11 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
             sortList.add(i);
             adapterList.add(item);
         }
-        this.callback = callback;
+        this.comment = comment;
+        this.shuffleButton = shuffleButton;
     }
 
+    protected abstract Observable<SortTask> getSortPlan();
     public abstract void sort();
 
     @NonNull
@@ -61,7 +63,7 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ItemHolder itemHolder, int i) {
-        itemHolder.tvElem.setText(String.format("%d", adapterList.get(i).num));
+        itemHolder.tvElem.setText(String.valueOf(adapterList.get(i).num));
         switch (adapterList.get(i).color) {
             case BLACK:
                 itemHolder.tvElem.setBackgroundResource(R.drawable.black_circle);
@@ -92,20 +94,17 @@ public abstract class SortAdapter extends RecyclerView.Adapter<ItemHolder> {
         //final ItemColor color2 = colorList.get(index2);
         changeColor(index1, RED);
         changeColor(index2, RED);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                notifyItemMoved(index1, index2);
-                notifyItemMoved(index2 - 1, index1);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeColor(index1, BLACK);
-                        changeColor(index2, BLACK);
-                        Log.d("DEBUG", "swap finish " + index1 + " " + index2);
-                    }
-                }, 1000);
-            }
+        handler.postDelayed(() -> {
+            notifyItemMoved(index1, index2);
+            notifyItemMoved(index2 - 1, index1);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    changeColor(index1, BLACK);
+                    changeColor(index2, BLACK);
+                    Log.d("DEBUG", "swap finish " + index1 + " " + index2);
+                }
+            }, 1000);
         }, 1000);
     }
 

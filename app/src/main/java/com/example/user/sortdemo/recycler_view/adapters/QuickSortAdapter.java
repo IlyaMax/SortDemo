@@ -1,8 +1,17 @@
 package com.example.user.sortdemo.recycler_view.adapters;
 
-import java.util.Collections;
+import android.widget.Button;
+import android.widget.TextView;
 
-import io.reactivex.functions.Action;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.example.user.sortdemo.recycler_view.ItemColor.BLACK;
 import static com.example.user.sortdemo.recycler_view.ItemColor.BLUE;
@@ -11,180 +20,111 @@ import static com.example.user.sortdemo.recycler_view.ItemColor.RED;
 import static com.example.user.sortdemo.recycler_view.ItemColor.YELLOW;
 
 public class QuickSortAdapter extends SortAdapter {
-    public QuickSortAdapter(Action callback) {
-        super(callback);
+    public QuickSortAdapter(TextView comment, Button shuffleButton) {
+        super(comment, shuffleButton);
+    }
+
+    @Override
+    protected Observable<SortTask> getSortPlan() {
+        return Observable.create(emitter -> {
+            List<SortTask> tasks = quickSort(0, sortList.size() - 1);
+            for (SortTask task : tasks) {
+                emitter.onNext(task);
+            }
+        });
     }
 
     @Override
     public void sort() {
         print_array();
-        time = 0;
-        quickSort(0,sortList.size()-1);
-        //Log.d(TAG,"Длительность сортировки: " + seconds);
+        Disposable disposable = getSortPlan()
+                .zipWith(Observable.interval(SHORT_INTERVAL, TimeUnit.MILLISECONDS), ((sortTask, timer) -> sortTask))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(SortTask::execute, Throwable::printStackTrace);
     }
-    private void quickSort(int low, int high) {
+
+    private List<SortTask> quickSort(int low, int high) {
+        List<SortTask> tasks = new ArrayList<>();
         if (low >= high)
-            return;//завершить выполнение если уже нечего делить
-
-        // выбрать опорный элемент
+            return tasks;
         int middle = low + (high - low) / 2;
-        final int pivot = sortList.get(middle);
-        final int finMid_1 = middle;
-
-        // разделить на подмассивы, который больше и меньше опорного элемента
+        int pivot = sortList.get(middle);
+        final String msgSortBoundaries = (low == 0 && high == sortList.size() - 1) ? "Начало сортировки массива"
+                : "Начало сортировки подмассива от " + low + " до " + high;
+        tasks.add(() -> comment.setText(msgSortBoundaries));
+        final String msgPivot = "Опорным элементом выбираем " + pivot;
+        tasks.add(() -> comment.setText(msgPivot));
+        tasks.add(new HighlightTask(BLUE, middle));
         int i = low;
         int j = high;
-        final int finLow = low;
-        final int finHigh = high;
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String msg = (finLow == 0 && finHigh == sortList.size()-1) ? "Начало сортировки массива"
-                        : "Начало сортировки подмассива от " + finLow + " до " + finHigh;
-                comment.setText(msg);
-            }
-        },time);
-        time+=3000;
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String msg = "Опорным элементом выбираем " + pivot;
-                comment.setText(msg);
-            }
-        },time);
-        time+=1000;
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                changeColor(finMid_1,BLUE);
-            }
-        },time);
-        time+=1000;
-
         while (i < j) {
-            final int finMid_2 = middle;
             if (isPartitioned(middle)) break;
-            //final int finJ_1 = j;
-            do {
-                final int finI_1 = i;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeColor(finI_1, YELLOW);
-                    }
-                }, time);
-                time += 500;
-                if (sortList.get(i) < pivot) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            changeColor(finI_1, BLACK);
-                        }
-                    }, time);
-                    time += 500;
+            while (i < middle && sortList.get(i) < pivot) {
+                tasks.add(new HighlightTask(YELLOW, i));
+                tasks.add(new HighlightTask(BLACK, i));
+                i++;
+            }
+            tasks.add(new HighlightTask(RED, i));
+            while (j > middle && sortList.get(j) > pivot) {
+                tasks.add(new HighlightTask(YELLOW, j));
+                tasks.add(new HighlightTask(BLACK, j));
+                j--;
+            }
+            tasks.add(new HighlightTask(RED, j));
+            if (i < j) {
+                Collections.swap(sortList, i, j);
+                tasks.add(new SwapTask(i, j));
+                if (i == middle) {
+                    int finalJ = j;
+                    int finalI = i;
+                    //вовзвращаем первоначальный цвет
+                    tasks.add(() -> {
+                        changeColor(finalJ, BLUE);
+                        changeColor(finalI, BLACK);
+                    });
+                    middle = j;
+                } else if (j == middle) {
+                    int finalJ = j;
+                    int finalI = i;
+                    //вовзвращаем первоначальный цвет
+                    tasks.add(() -> {
+                        changeColor(finalI, BLUE);
+                        changeColor(finalJ, BLACK);
+                    });
+                    middle = i;
+                } else {
+                    tasks.add(new HighlightTask(BLACK, i, j));
                 }
-                else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            changeColor(finI_1, RED);
-                        }
-                    }, time);
-                    time += 500;
-                }
-            }while (sortList.get(i++) < pivot);
-            i--;
-            do {
-                final int finJ_1 = j;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeColor(finJ_1, YELLOW);
-                    }
-                }, time);
-                time += 500;
-                if (sortList.get(j) > pivot) {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            changeColor(finJ_1, BLACK);
-                        }
-                    }, time);
-                    time += 500;
-                }
-                else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            changeColor(finJ_1, RED);
-                        }
-                    }, time);
-                    time += 500;
-                }
-            }while (sortList.get(j--) > pivot);
-            j++;
-            if (i <= j) {//меняем местами
-                Collections.swap(sortList,i,j);
-                final int finI_2 = i,finJ_2 = j;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finI_2 != finJ_2) notifyItemsSwapped(finI_2,finJ_2);
-                    }
-                },time);
-                time += 2500;
-                if (finJ_2 == finMid_2){
-                    middle = finI_2;
-                }
-                if (finI_2 == finMid_2){
-                    middle = finJ_2;
-                }
-                final int finMid_3 = middle;
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        changeColor(finMid_3,BLUE);
-                    }
-                },time);
-                time+=1000;
             }
         }
-        final int finMid_4 = middle;
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                changeColor(finMid_4,ORANGE);
-            }
-        },time);
-        time+=1000;
+        tasks.add(new HighlightTask(ORANGE, middle));
         // вызов рекурсии для сортировки левой и правой части
-        quickSort(low, middle-1);
-        quickSort(middle+1, high);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String msg;
-                if (finLow == 0&&finHigh == sortList.size()-1){
-                    msg = "Mассив отсортирован";
-                    shuffleButton.setEnabled(true);
-                    for(int item=finLow;item<=finHigh;item++)changeColor(item,BLACK);
-                }
-                else{
-                    msg = "Сортировка подмассива от " + finLow + " до " + finHigh + " завершена";
-                    for(int item=finLow;item<=finHigh;item++)changeColor(item,ORANGE);
-                }
-                comment.setText(msg);
+        tasks.addAll(quickSort(low, middle - 1));
+        tasks.addAll(quickSort(middle + 1, high));
+
+        tasks.add(() -> {
+            String msgSorted;
+            if (low == 0 && high == sortList.size() - 1) {
+                msgSorted = "Mассив отсортирован";
+                shuffleButton.setEnabled(true);
+                for (int item = low; item <= high; item++) changeColor(item, BLACK);
+            } else {
+                msgSorted = "Сортировка подмассива от " + low + " до " + high + " завершена";
+                for (int item = low; item <= high; item++) changeColor(item, ORANGE);
             }
-        },time);
-        time += 3000;
+            comment.setText(msgSorted);
+        });
+        return tasks;
     }
-    private boolean isPartitioned(int mid){
-        int opora = sortList.get(mid);
-        for (int i=0;i<mid;i++){
-            if (sortList.get(i)>opora) return false;
+
+    private boolean isPartitioned(int middle) {
+        int pivot = sortList.get(middle);
+        for (int i = 0; i < middle; i++) {
+            if (sortList.get(i) > pivot) return false;
         }
-        for (int i=sortList.size()-1;i>mid;i--){
-            if (sortList.get(i)<opora) return false;
+        for (int i = sortList.size() - 1; i > middle; i--) {
+            if (sortList.get(i) < pivot) return false;
         }
         return true;
     }
